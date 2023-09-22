@@ -6,4 +6,4 @@
         Generated data
 """
 def model(orig_data):
-    pass
+    return orig_data
