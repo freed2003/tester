@@ -40,12 +40,12 @@ def data_loader(seq_len):
 
 def synthetic_data(num, seq_len):
     """
-    Generates synthetic I/Q samples as 48k rate sampling
+    Generates synthetic I/Q samples at 48k rate sampling
     """
     data = []
-    I = np.random.uniform(-1, 1)
-    Q =  np.random.uniform(-1, 1)
     for i in range(num):
+        I = np.random.uniform(-1, 1)
+        Q =  np.random.uniform(-1, 1)
         freq = np.random.uniform(0, 0.1)            
         phase = np.random.uniform(0, 0.1)
         temp = []

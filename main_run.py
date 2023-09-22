@@ -11,27 +11,27 @@ def main(parameters):
         orig_data = synthetic_data(10000, 100)
     else:
         orig_data = data_loader(100)
-
+    print("Generating data")
     new_data = model(orig_data)
 
-    metrics = {}
-    ds = []
-    for _ in range(10):
-        temp = discriminative_score_metrics(orig_data, new_data)
-        ds.append(temp)
-    metrics['discriminative'] = np.mean(ds)
+    # metrics = {}
+    # ds = []
+    # for _ in range(10):
+    #     temp = discriminative_score_metrics(orig_data, new_data)
+    #     ds.append(temp)
+    # metrics['discriminative'] = np.mean(ds)
 
-    pred = []
-    for __ in range(10):
-        temp = predictive_score_metrics(orig_data, new_data)
-        pred.append(temp)
+    # pred = []
+    # for __ in range(10):
+    #     temp = predictive_score_metrics(orig_data, new_data)
+    #     pred.append(temp)
 
-    metrics['predictive'] = np.mean(pred)
+    # metrics['predictive'] = np.mean(pred)
 
     visualization(orig_data, new_data, 'pca')
     visualization(orig_data, new_data, 'tsne')
 
-    print(metrics)
+    # print(metrics)
     
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
