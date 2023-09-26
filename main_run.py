@@ -6,13 +6,21 @@ from metrics.discriminative_metrics import discriminative_score_metrics
 from metrics.predictive_metrics import predictive_score_metrics
 from metrics.visualization_metrics import visualization
 def main(parameters):
+    print("Generating data")
     orig_data = []
     if args.synthetic:
         orig_data = synthetic_data(10000, 100)
     else:
         orig_data = data_loader(100)
-    print("Generating data")
-    new_data = model(orig_data)
+    print("Done Generating data")
+    params = {}
+    # parameters['module'] = args.module
+    params['hidden_dim'] = args.hidden_dim
+    # parameters['num_layer'] = args.num_layer
+    params['iterations'] = args.iteration
+    params['batch_size'] = args.batch_size
+    new_data = model(orig_data, params)
+    
 
     # metrics = {}
     # ds = []
@@ -40,5 +48,20 @@ if __name__ == "__main__":
         help='use python generated data instead',
         action='store_true'
     )
+    parser.add_argument(
+      '--hidden_dim',
+      help='hidden state dimensions (should be optimized)',
+      default=24,
+      type=int)
+    parser.add_argument(
+      '--iteration',
+      help='Training iterations (should be optimized)',
+      default=50000,
+      type=int)
+    parser.add_argument(
+      '--batch_size',
+      help='the number of samples in mini-batch (should be optimized)',
+      default=128,
+      type=int)
     args = parser.parse_args() 
     main(args)

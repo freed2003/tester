@@ -142,4 +142,4 @@ def batch_generator(data, batch_size):
   X_mb = list(data[i] for i in train_idx)
   # T_mb = list(time[i] for i in train_idx)
   
-  return X_mb
+  return np.stack(X_mb)

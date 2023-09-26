@@ -14,7 +14,6 @@
 
 
 import tensorflow as tf
-print(tf.__version__)
 import keras
 from keras import layers
 import numpy as np
@@ -50,10 +49,10 @@ def model (ori_data, parameters):
         return norm_data, min_val, max_val
     ori_data, min_val, max_val = MinMaxScaler(ori_data)
     cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
-    mean_squared = tf.keras.losses.MeanSqauredError(from_logits=True)
+    mean_squared = tf.keras.losses.MeanSquaredError()
     def embedder():
         model = keras.Sequential()
-        model.add(layers.GRU(dim))
+        model.add(layers.GRU(hidden_dim))
         model.add(layers.Dense(hidden_dim, activation="sigmoid"))
         return model
     def recovery():
@@ -89,9 +88,9 @@ def model (ori_data, parameters):
     G_solver = tf.keras.optimizers.Adam(1e-4)   
     GS_solver = tf.keras.optimizers.Adam(1e-4)
     print('Start Embedding Network Training')
-
     for itt in range(iterations):
         X_mb = batch_generator(ori_data, batch_size)
+        print("Shape: ", X_mb.shape)
         H = emb(X_mb)
         X_tilde = rec(H)
         E_loss_T0 = mean_squared(X_mb, X_tilde)
@@ -126,7 +125,7 @@ def model (ori_data, parameters):
             # Set mini-batch
             X_mb = batch_generator(ori_data, batch_size)               
             # Random vector generation
-            Z_mb = random_generator(batch_size, z_dim, 10)
+            Z_mb = random_generator(batch_size, z_dim, max_seq_len)
 
             E_hat = gen(Z_mb)
             H = emb(X_mb)
@@ -135,8 +134,8 @@ def model (ori_data, parameters):
             Y_fake_e = disc(E_hat)
             X_hat = rec(H_hat)
             X_tilde(rec(H))
-            G_loss_U = tf.losses.sigmoid_cross_entropy(tf.ones_like(Y_fake), Y_fake)
-            G_loss_U_e = tf.losses.sigmoid_cross_entropy(tf.ones_like(Y_fake_e), Y_fake_e)
+            G_loss_U = cross_entropy(tf.ones_like(Y_fake), Y_fake)
+            G_loss_U_e = cross_entropy(tf.ones_like(Y_fake_e), Y_fake_e)
                 
             # 2. Supervised loss
             G_loss_S = tf.losses.mean_squared_error(H[:,1:,:], H_hat_supervise[:,:-1,:])
@@ -165,9 +164,9 @@ def model (ori_data, parameters):
         H_hat = sup(E_hat)
         Y_fake = disc(H_hat)
         Y_fake_e = disc(E_hat)
-        D_loss_real = tf.losses.sigmoid_cross_entropy(tf.ones_like(Y_real), Y_real)
-        D_loss_fake = tf.losses.sigmoid_cross_entropy(tf.zeros_like(Y_fake), Y_fake)
-        D_loss_fake_e = tf.losses.sigmoid_cross_entropy(tf.zeros_like(Y_fake_e), Y_fake_e)
+        D_loss_real = cross_entropy(tf.ones_like(Y_real), Y_real)
+        D_loss_fake = cross_entropy(tf.zeros_like(Y_fake), Y_fake)
+        D_loss_fake_e = cross_entropy(tf.zeros_like(Y_fake_e), Y_fake_e)
         D_loss = D_loss_real + D_loss_fake + gamma * D_loss_fake_e
 
         # Train discriminator (only when the discriminator does not work well)
